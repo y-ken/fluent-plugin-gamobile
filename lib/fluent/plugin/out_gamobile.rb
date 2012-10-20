@@ -25,7 +25,7 @@ class Fluent::GamobileOutput < Fluent::Output
     @ga_account = @ga_account.gsub('UA-', 'MO-') if @ga_account.include?('UA-')
     @development = Fluent::Config.bool_value(@development) || false
     @unique_ident_key = @unique_ident_key.split(',')
-    $log.info "gamobile: unique key with #{@unique_ident_key}"
+    $log.info "gamobile treats unique identifer key with #{@unique_ident_key}"
   end
 
   def emit(tag, es, chain)
