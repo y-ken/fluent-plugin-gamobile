@@ -91,7 +91,7 @@ class Fluent::GamobileOutput < Fluent::Output
       $log.info "gamobile sending report: #{uri.to_s}" if @development
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.get(uri.request_uri, {
-          "user_agent" => get_record(@map_useragent).to_s,
+          "User-Agent" => get_record(@map_useragent).to_s,
           "Accepts-Language" => get_record(@map_acceptlang).to_s
         })
       end
