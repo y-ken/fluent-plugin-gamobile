@@ -9,7 +9,7 @@ class Fluent::GamobileOutput < Fluent::Output
   config_param :map_referer, :string, :default => 'referer'
   config_param :map_useragent, :string, :default => 'agent'
   config_param :map_guid, :string, :default => 'guid'
-  config_param :map_acceptlanguage, :string, :default => 'lang'
+  config_param :map_acceptlang, :string, :default => 'lang'
 
   def initialize
     super
@@ -72,7 +72,6 @@ class Fluent::GamobileOutput < Fluent::Output
     queries << "utmcc=__utma%3D999.999.999.999.999.1%3B#{get_utmv}"
     queries << "utmvid=#{get_visitor_id}"
     queries << "utmip=#{get_remote_address}"
-    $log.info "gamobile sending query: #{queries}"
     return URI.parse(utm_gif_location + '?' + queries.join('&'))
   end
 
@@ -84,7 +83,7 @@ class Fluent::GamobileOutput < Fluent::Output
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.get(uri.request_uri, {
           "user_agent" => get_record(@map_useragent).to_s,
-          "Accepts-Language" => get_record(@map_acceptlanguage).to_s
+          "Accepts-Language" => get_record(@map_acceptlang).to_s
         })
       end
     rescue => e
