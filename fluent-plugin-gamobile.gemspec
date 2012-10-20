@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Kentaro Yoshida"]
   s.email       = ["y.ken.studio@gmail.com"]
   s.homepage    = "https://github.com/y-ken/fluent-plugin-gamobile"
-  s.summary     = %q{Fluentd Output plugin to tracking access_log with google analytics mobile.}
+  s.summary     = %q{Fluentd Output plugin to send access report with "Google Analytics for mobile".}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
