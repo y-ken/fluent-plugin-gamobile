@@ -53,7 +53,7 @@ class Fluent::GamobileOutput < Fluent::Output
   end
 
   def get_visitor_id
-    if !@unique_ident_key.empty?
+    if !@unique_ident_key.blank?
       message = "#{@ga_account}"
       @unique_ident_key.map {|key| message.concat("#{get_record(key)}")}
     elsif get_record(@map_guid).blank?
