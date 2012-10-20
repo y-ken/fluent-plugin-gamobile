@@ -20,6 +20,7 @@ class Fluent::GamobileOutput < Fluent::Output
 
   def configure(conf)
     super
+    @ga_account = @ga_account.gsub('UA-', 'MO-') if @ga_account.include?('UA-')
   end
 
   def emit(tag, es, chain)
