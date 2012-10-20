@@ -11,6 +11,7 @@ class Fluent::GamobileOutput < Fluent::Output
   config_param :map_useragent, :string, :default => 'agent'
   config_param :map_guid, :string, :default => 'guid'
   config_param :map_acceptlang, :string, :default => 'lang'
+  config_param :define_unique, :string, :default => nil
 
   def initialize
     super
@@ -23,6 +24,8 @@ class Fluent::GamobileOutput < Fluent::Output
     super
     @ga_account = @ga_account.gsub('UA-', 'MO-') if @ga_account.include?('UA-')
     @development = Fluent::Config.bool_value(@development) || false
+    @define_unique = @define_unique.split(',')
+    $log.info "gamobile: unique key with #{@define_unique}"
   end
 
   def emit(tag, es, chain)
@@ -50,7 +53,11 @@ class Fluent::GamobileOutput < Fluent::Output
   end
 
   def get_visitor_id
-    if get_record(@map_guid).blank?
+    if !@define_unique.empty?
+      message = "#{@ga_account}"
+      @define_unique.map {|key| message.concat("#{get_record(key)}")}
+      $log.info "visitor_id made from #{message}"
+    elsif get_record(@map_guid).blank?
       message = "#{get_record(@map_useragent)}#{Digest::SHA1.hexdigest(rand.to_s)}#{Time.now.to_i}"
     else
       message = "#{get_record(@map_guid)}#{@ga_account}"
