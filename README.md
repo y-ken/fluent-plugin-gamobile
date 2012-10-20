@@ -42,7 +42,7 @@ Please setup "gem install fluent-plugin-rewrite-tag-filter" before trying this s
   type gamobile
   ga_account  MO-12345678-1
   # set UserVar from record
-  set_var     useragent
+  set_var     agent
 </match>
 `````
 
