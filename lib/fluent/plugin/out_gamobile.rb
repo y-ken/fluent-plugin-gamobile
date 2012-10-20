@@ -2,6 +2,7 @@ class Fluent::GamobileOutput < Fluent::Output
   Fluent::Plugin.register_output('gamobile', self)
 
   config_param :ga_account, :string
+  config_param :development, :string, :default => 'yes'
   config_param :set_var, :string, :default => nil
   config_param :map_domain, :string, :default => 'domain'
   config_param :map_remoteaddr, :string, :default => 'host'
@@ -21,6 +22,7 @@ class Fluent::GamobileOutput < Fluent::Output
   def configure(conf)
     super
     @ga_account = @ga_account.gsub('UA-', 'MO-') if @ga_account.include?('UA-')
+    @development = Fluent::Config.bool_value(@development) || false
   end
 
   def emit(tag, es, chain)
@@ -80,7 +82,7 @@ class Fluent::GamobileOutput < Fluent::Output
     set_record(record)
     begin
       uri = build_query
-      $log.info "gamobile sending report: #{uri.to_s}"
+      $log.info "gamobile sending report: #{uri.to_s}" if @development
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.get(uri.request_uri, {
           "user_agent" => get_record(@map_useragent).to_s,

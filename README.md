@@ -41,8 +41,10 @@ Please setup "gem install fluent-plugin-rewrite-tag-filter" before trying this s
 <match apache.access.robot>
   type gamobile
   ga_account     MO-12345678-1
+  # toggle logger mode
+  development    yes           # Optional (default: no)
   # set UserVar from record
-  set_var        agent         # Optional (default none)
+  set_var        agent         # Optional
   # mapping internal name with record
   map_domain     domain        # Optional (default: domain)
   map_remoteaddr host          # Optional (default: host)
