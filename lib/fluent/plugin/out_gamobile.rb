@@ -66,7 +66,8 @@ class Fluent::GamobileOutput < Fluent::Output
   end
 
   def get_utmv
-     return ERB::Util.u("+__utmv=999#{get_record(@set_var)};") unless get_record(@set_var).blank?
+     user_var = get_record(@set_var).gsub(';','%3B')
+     return ERB::Util.u("+__utmv=999#{user_var};") unless user_var.blank?
   end
 
   def build_query
@@ -81,6 +82,7 @@ class Fluent::GamobileOutput < Fluent::Output
     queries << "utmcc=__utma%3D999.999.999.999.999.1%3B#{get_utmv}"
     queries << "utmvid=#{get_visitor_id}"
     queries << "utmip=#{get_remote_address}"
+    $log.info "gamobile building query: #{queries}" if @development
     return URI.parse(utm_gif_location + '?' + queries.join('&'))
   end
 
