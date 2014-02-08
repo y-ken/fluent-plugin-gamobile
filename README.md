@@ -1,4 +1,4 @@
-fluent-plugin-gamobile
+fluent-plugin-gamobile, a plugin for [Fluentd](http://fluentd.org)
 =====================
 
 ## Component
