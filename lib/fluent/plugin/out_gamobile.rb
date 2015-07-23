@@ -16,6 +16,7 @@ class Fluent::GamobileOutput < Fluent::Output
   def initialize
     super
     require 'net/http'
+    require 'active_support'
     require 'active_support/core_ext'
     Net::HTTP.version_1_2
   end
