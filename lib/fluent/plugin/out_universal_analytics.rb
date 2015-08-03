@@ -1,13 +1,15 @@
 class Fluent::GamobileOutput < Fluent::Output
-  Fluent::Plugin.register_output('gamobile', self)
+  Fluent::Plugin.register_output('universal_analytics', self)
 
   config_param :ga_account, :string
   config_param :development, :string, :default => 'no'
   config_param :set_var, :string, :default => nil
-  config_param :map_domain, :string, :default => 'domain'
+  config_param :map_dl, :string, :default => 'domain'
+  config_param :fix_dl, :string, :default => nil
   config_param :map_remoteaddr, :string, :default => 'host'
-  config_param :map_path, :string, :default => 'path'
   config_param :map_referer, :string, :default => 'referer'
+  config_param :map_cd1, :string, :default => 'cd1'
+  config_param :map_cd2, :string, :default => 'cd2'
   config_param :map_useragent, :string, :default => 'agent'
   config_param :map_guid, :string, :default => 'guid'
   config_param :map_acceptlang, :string, :default => 'lang'
@@ -23,10 +25,9 @@ class Fluent::GamobileOutput < Fluent::Output
 
   def configure(conf)
     super
-    @ga_account = @ga_account.gsub(/^UA-/, 'MO-') if @ga_account.include?('UA-')
     @development = Fluent::Config.bool_value(@development) || false
     @unique_ident_key = @unique_ident_key.split(',')
-    $log.info "gamobile treats unique identifer key with #{@unique_ident_key}"
+    $log.info "universal_analytics treats unique identifer key with #{@unique_ident_key}"
   end
 
   def emit(tag, es, chain)
@@ -71,19 +72,27 @@ class Fluent::GamobileOutput < Fluent::Output
      return ERB::Util.u("+__utmv=999#{user_var};") unless user_var.blank?
   end
 
+  def get_dl
+     if fix_dl then
+       return ERB::Util.u(fix_dl)
+     else
+       return ERB::Util.u(get_record(@map_dl))
+     end
+  end
+
   def build_query
-    utm_gif_location = 'http://www.google-analytics.com/__utm.gif'
+    utm_gif_location = 'http://www.google-analytics.com/r/collect'
     queries = Array.new
-    queries << "utmwv=4.4sh"
-    queries << "utmn=#{rand(1000000*1000000)}"
-    queries << "utmhn=#{ERB::Util.u(get_record(@map_domain))}"
-    queries << "utmr=#{ERB::Util.u(get_record(@map_referer))}"
-    queries << "utmp=#{ERB::Util.u(get_record(@map_path))}"
-    queries << "utmac=#{@ga_account}"
-    queries << "utmcc=__utma%3D999.999.999.999.999.1%3B#{get_utmv}"
-    queries << "utmvid=#{get_visitor_id}"
-    queries << "utmip=#{get_remote_address}"
-    $log.info "gamobile building query: #{queries}" if @development
+    queries << "v=1"
+    queries << "t=pageview"
+    queries << "dl=#{get_dl}"
+    queries << "dr=#{ERB::Util.u(get_record(@map_referer))}"
+    queries << "tid=#{@ga_account}"
+    queries << "ua=#{get_utmv}"
+    queries << "cid=#{get_visitor_id}"
+    queries << "cd1=#{ERB::Util.u(get_record(@map_cd1))}"
+    queries << "cd2=#{ERB::Util.u(get_record(@map_cd2))}"
+    $log.info "universal_analytics building query: #{queries}" if @development
     return URI.parse(utm_gif_location + '?' + queries.join('&'))
   end
 
@@ -91,7 +100,7 @@ class Fluent::GamobileOutput < Fluent::Output
     set_record(record)
     begin
       uri = build_query
-      $log.info "gamobile sending report: #{uri.to_s}" if @development
+      $log.info "universal_analytics sending report: #{uri.to_s}" if @development
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.get(uri.request_uri, {
           "User-Agent" => get_record(@map_useragent).to_s,
@@ -99,7 +108,7 @@ class Fluent::GamobileOutput < Fluent::Output
         })
       end
     rescue => e
-      $log.error("gamobile Error: #{e.message}")
+      $log.error("universal_analytics Error: #{e.message}")
     end
   end
 end

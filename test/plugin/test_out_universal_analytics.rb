@@ -6,7 +6,7 @@ class GamobileOutputTest < Test::Unit::TestCase
   end
 
   CONFIG = %[
-    ga_account MO-1234567-1
+    ga_account UA-1234567-1
     set_var    agent
   ]
 
@@ -19,11 +19,11 @@ class GamobileOutputTest < Test::Unit::TestCase
       d = create_driver('')
     }
     d = create_driver %[
-      ga_account MO-1234567-1
+      ga_account UA-1234567-1
       set_var    agent
     ]
     d.instance.inspect
-    assert_equal 'MO-1234567-1', d.instance.ga_account
+    assert_equal 'UA-1234567-1', d.instance.ga_account
     assert_equal 'agent', d.instance.set_var
   end
 
