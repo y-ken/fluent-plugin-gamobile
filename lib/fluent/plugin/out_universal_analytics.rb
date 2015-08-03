@@ -1,5 +1,5 @@
 class Fluent::GamobileOutput < Fluent::Output
-  Fluent::Plugin.register_output('gamobile', self)
+  Fluent::Plugin.register_output('universal_analytics', self)
 
   config_param :ga_account, :string
   config_param :development, :string, :default => 'no'
@@ -7,7 +7,6 @@ class Fluent::GamobileOutput < Fluent::Output
   config_param :map_dl, :string, :default => 'domain'
   config_param :fix_dl, :string, :default => nil
   config_param :map_remoteaddr, :string, :default => 'host'
-  config_param :fix_path, :string, :default => nil
   config_param :map_referer, :string, :default => 'referer'
   config_param :map_cd1, :string, :default => 'cd1'
   config_param :map_cd2, :string, :default => 'cd2'
@@ -28,7 +27,7 @@ class Fluent::GamobileOutput < Fluent::Output
     super
     @development = Fluent::Config.bool_value(@development) || false
     @unique_ident_key = @unique_ident_key.split(',')
-    $log.info "gamobile treats unique identifer key with #{@unique_ident_key}"
+    $log.info "universal_analytics treats unique identifer key with #{@unique_ident_key}"
   end
 
   def emit(tag, es, chain)
@@ -93,7 +92,7 @@ class Fluent::GamobileOutput < Fluent::Output
     queries << "cid=#{get_visitor_id}"
     queries << "cd1=#{ERB::Util.u(get_record(@map_cd1))}"
     queries << "cd2=#{ERB::Util.u(get_record(@map_cd2))}"
-    $log.info "gamobile building query: #{queries}" if @development
+    $log.info "universal_analytics building query: #{queries}" if @development
     return URI.parse(utm_gif_location + '?' + queries.join('&'))
   end
 
@@ -101,7 +100,7 @@ class Fluent::GamobileOutput < Fluent::Output
     set_record(record)
     begin
       uri = build_query
-      $log.info "gamobile sending report: #{uri.to_s}" if @development
+      $log.info "universal_analytics sending report: #{uri.to_s}" if @development
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.get(uri.request_uri, {
           "User-Agent" => get_record(@map_useragent).to_s,
@@ -109,7 +108,7 @@ class Fluent::GamobileOutput < Fluent::Output
         })
       end
     rescue => e
-      $log.error("gamobile Error: #{e.message}")
+      $log.error("universal_analytics Error: #{e.message}")
     end
   end
 end

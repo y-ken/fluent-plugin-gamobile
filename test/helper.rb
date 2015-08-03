@@ -22,7 +22,7 @@ unless ENV.has_key?('VERBOSE')
   $log = nulllogger
 end
 
-require 'fluent/plugin/out_gamobile'
+require 'fluent/plugin/out_universal_analytics'
 
 class Test::Unit::TestCase
 end
