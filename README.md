@@ -24,8 +24,7 @@ Please setup "gem install fluent-plugin-rewrite-tag-filter" before trying this s
 <source>
   type tail
   path /var/log/httpd/access_log
-  format /^(?<domain>[^ ]*) (?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<status>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)" (?<response_time>[^ ]*))?$/
-  time_format %d/%b/%Y:%H:%M:%S %z
+  format apache2
   tag td.apache.access
   pos_file /var/log/td-agent/apache_access.pos
 </source>
@@ -48,13 +47,11 @@ Please setup "gem install fluent-plugin-rewrite-tag-filter" before trying this s
   # treat same user these keys are same.
   unique_ident_key host,agent  # Optional
   # mapping internal name with record
-  map_domain       domain        # Optional (default: domain)
-  map_remoteaddr   host          # Optional (default: host)
-  map_path         path          # Optional (default: path)
-  map_referer      referer       # Optional (default: referer)
-  map_useragent    agent         # Optional (default: agent)
-  map_guid         guid          # Optional (default: guid)
-  map_acceptlang   lang          # Optional (default: lang)
+  map_dh           domain
+  map_remoteaddr   host
+  map_dp           path
+  map_referer      referer
+  map_useragent    agent
 </match>
 `````
 
@@ -64,6 +61,7 @@ Please setup "gem install fluent-plugin-rewrite-tag-filter" before trying this s
 
 ## Backend Service
 http://www.google.com/intl/ja/analytics/
+https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters?hl=ja
 
 ## TODO
 patches welcome!
@@ -73,4 +71,3 @@ Copyright © 2012- Kentaro Yoshida (@yoshi_ken)
 
 ## License
 Apache License, Version 2.0
-

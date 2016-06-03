@@ -4,10 +4,12 @@ class Fluent::GamobileOutput < Fluent::Output
   config_param :ga_account, :string
   config_param :development, :string, :default => 'no'
   config_param :set_var, :string, :default => nil
-  config_param :map_domain, :string, :default => 'domain'
+  config_param :map_dh, :string, :default => 'domain'
+  config_param :map_dp, :string, :default => 'path'
   config_param :map_remoteaddr, :string, :default => 'host'
-  config_param :map_path, :string, :default => 'path'
   config_param :map_referer, :string, :default => 'referer'
+  config_param :map_cd1, :string, :default => 'cd1'
+  config_param :map_cd2, :string, :default => 'cd2'
   config_param :map_useragent, :string, :default => 'agent'
   config_param :map_guid, :string, :default => 'guid'
   config_param :map_acceptlang, :string, :default => 'lang'
@@ -23,7 +25,6 @@ class Fluent::GamobileOutput < Fluent::Output
 
   def configure(conf)
     super
-    @ga_account = @ga_account.gsub(/^UA-/, 'MO-') if @ga_account.include?('UA-')
     @development = Fluent::Config.bool_value(@development) || false
     @unique_ident_key = @unique_ident_key.split(',')
     $log.info "gamobile treats unique identifer key with #{@unique_ident_key}"
@@ -72,17 +73,19 @@ class Fluent::GamobileOutput < Fluent::Output
   end
 
   def build_query
-    utm_gif_location = 'http://www.google-analytics.com/__utm.gif'
+    utm_gif_location = 'http://www.google-analytics.com/r/collect'
     queries = Array.new
-    queries << "utmwv=4.4sh"
-    queries << "utmn=#{rand(1000000*1000000)}"
-    queries << "utmhn=#{ERB::Util.u(get_record(@map_domain))}"
-    queries << "utmr=#{ERB::Util.u(get_record(@map_referer))}"
-    queries << "utmp=#{ERB::Util.u(get_record(@map_path))}"
-    queries << "utmac=#{@ga_account}"
-    queries << "utmcc=__utma%3D999.999.999.999.999.1%3B#{get_utmv}"
-    queries << "utmvid=#{get_visitor_id}"
-    queries << "utmip=#{get_remote_address}"
+    queries << "v=1"
+    queries << "t=pageview"
+    queries << "dh=#{ERB::Util.u(get_record(@map_dh))}"
+    queries << "dp=#{ERB::Util.u(get_record(@map_dp))}"
+    queries << "dr=#{ERB::Util.u(get_record(@map_referer))}"
+    queries << "tid=#{@ga_account}"
+    queries << "uip=#{get_remote_address}"
+    queries << "ua=#{get_utmv}"
+    queries << "cid=#{get_visitor_id}"
+    queries << "cd1=#{ERB::Util.u(get_record(@map_cd1))}"
+    queries << "cd2=#{ERB::Util.u(get_record(@map_cd2))}"
     $log.info "gamobile building query: #{queries}" if @development
     return URI.parse(utm_gif_location + '?' + queries.join('&'))
   end
