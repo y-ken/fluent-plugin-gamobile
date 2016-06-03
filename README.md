@@ -1,4 +1,4 @@
-fluent-plugin-gamobile
+fluent-plugin-gamobile [![Build Status](https://travis-ci.org/y-ken/fluent-plugin-gamobile.png?branch=master)](https://travis-ci.org/y-ken/fluent-plugin-gamobile)
 =====================
 
 ## Component
