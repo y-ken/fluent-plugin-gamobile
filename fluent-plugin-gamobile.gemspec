@@ -18,11 +18,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "test-unit", '~> 3'
   s.add_development_dependency "appraisal"
   s.add_runtime_dependency "fluentd"
-  s.add_runtime_dependency "activesupport", '~> 6.1.7', '>= 6.1.7.3'
+  s.add_runtime_dependency "activesupport", '~> 7.2', '>= 7.2.3.1'
   s.add_runtime_dependency "i18n"
-  # Required by activesupport on Ruby 3.4+, where these are no longer default gems.
-  s.add_runtime_dependency "bigdecimal"
-  s.add_runtime_dependency "base64"
-  s.add_runtime_dependency "drb"
-  s.add_runtime_dependency "mutex_m"
 end
